@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+
+  # Nginx Container
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    volumes:
+      - .:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - postgres
+    networks:
+      - app_network
+
+  # PostgreSQL Container
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: "root"
+      POSTGRES_PASSWORD: "root"
+      POSTGRES_DB: "hamkadeh"
+      PGOPTIONS: "--work_mem=64MB --maintenance_work_mem=256MB"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+      #      - ./data/hamkadeh.sql:/docker-entrypoint-initdb.d/hamkadeh.sql
+      - ./data/test.sql:/docker-entrypoint-initdb.d/test.sql
+
+    networks:
+      - app_network
+
+  # PgAdmin Container
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "abbassmortazavi@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - app_network
+
+  # PHP-FPM Container
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    networks:
+      - app_network
+
+  # Composer Container
+  composer:
+    image: composer:latest
+    container_name: composer
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    networks:
+      - app_network
+
+  # Npm Container
+  npm:
+    image: node:latest
+    container_name: npm
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    entrypoint: [ 'npm' ]
+    networks:
+      - app_network
+
+  # Redis Container
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+      - ./redis:/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    networks:
+      - app_network
+
+  redis-commander:
+    image: rediscommander/redis-commander
+    container_name: redis-commander
+    ports:
+      - "8085:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    networks:
+      - app_network
+
+# Declare named volumes
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+# Define the network
+networks:
+  app_network:
