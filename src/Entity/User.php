@@ -19,6 +19,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource(
+
     operations: [
         // GET /users (collection) - Available to all roles
         new GetCollection(
@@ -35,7 +36,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
         // POST /users - Available to SUPERADMIN and COMPANY ADMIN only
         new Post(
             security: "is_granted('ROLE_SUPER_ADMIN') or is_granted('ROLE_COMPANY_ADMIN')",
-            securityMessage: "Only SUPER ADMIN and COMPANY ADMIN can create users."
+            securityMessage: "Only SUPER ADMIN and COMPANY ADMIN can create users.",
         ),
 
         // DELETE /users/{id} - Available to SUPERADMIN only
@@ -43,10 +44,11 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
             security: "is_granted('ROLE_SUPER_ADMIN')",
             securityMessage: "Only SUPER ADMIN can delete users."
         )
+
     ]
 )]
 #[ORM\Table(name: '`user`')]
-class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface , UserInterface
+class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface, UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -86,6 +88,7 @@ class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticate
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $username = null;
+
     /**
      * A visual identifier that represents this user.
      *
@@ -93,15 +96,16 @@ class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticate
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     public function setUsername(string $username): self
     {
-        $this->username = $username;
+        $this->username = $this->email;
 
         return $this;
     }
+
     public function getUsername(): ?string
     {
         return $this->username;
@@ -205,7 +209,7 @@ class User implements \Symfony\Component\Security\Core\User\PasswordAuthenticate
     public function getRoles(): array
     {
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles[] = $this->role->value;
         return array_unique($roles);
     }
 

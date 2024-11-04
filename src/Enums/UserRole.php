@@ -5,9 +5,9 @@ namespace App\Enums;
 enum UserRole: string
 {
     // Define each role as a constant
-    case ROLE_USER = 'user';
-    case ROLE_COMPANY_ADMIN = 'company_admin';
-    case ROLE_SUPER_ADMIN = 'super_admin';
+    case ROLE_USER = 'ROLE_USER';
+    case ROLE_COMPANY_ADMIN = 'ROLE_COMPANY_ADMIN';
+    case ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
 
     // Method to get all roles as an array of strings
     public static function getRoles(): array
