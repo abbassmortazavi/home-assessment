@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
     operations: [
         // GET /users (collection) - Available to all roles
         new GetCollection(
-            security: "is_granted('ROLE_USER')",
+            security: "is_granted('ROLE_USER') or is_granted('ROLE_SUPER_ADMIN')",
             securityMessage: "You do not have access to view users."
         ),
 
