@@ -12,9 +12,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class UserController extends AbstractController
 {
-
     #[Route('/api/register', name: 'register', methods: 'post')]
-    public function index(ManagerRegistry $doctrine, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    public function register(ManagerRegistry $doctrine, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $em = $doctrine->getManager();
         $email = $request->request->get('email');
@@ -22,10 +21,7 @@ class UserController extends AbstractController
         $name = $request->request->get('name');
 
         $user = new User();
-        $hashedPassword = $passwordHasher->hashPassword(
-            $user,
-            $plaintextPassword
-        );
+        $hashedPassword = $passwordHasher->hashPassword($user, $plaintextPassword);
         $user->setPassword($hashedPassword);
         $user->setEmail($email);
         $user->setUsername($email);
