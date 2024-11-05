@@ -53,6 +53,9 @@ docker-compose exec -it php bash
 like this : http://localhost:8082
 this is my localhost in my system.
 sample : http://localhost:8082/api/login_check
+after get token set for Bearer Token in Postman and requested test all api like these api :
+ method Get : http://localhost:8082/api/companies
+ method Get : http://localhost:8082/api/users
 ```
 
 ## Config Redis
@@ -60,10 +63,4 @@ sample : http://localhost:8082/api/login_check
 This Project Use Redis For Caching and also handel queue with redis.
 After All container up you can access redis-commander with this url :
  like this: http://localhost:8085
-```
-
-
-## Api Test
-```sh
- php artisan test
 ```
